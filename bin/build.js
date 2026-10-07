@@ -24,8 +24,20 @@ const packageJson = function (name) {
   "files": [
     "index.d.ts",
     "esm/index.js",
-    "cjs/index.js"
+    "cjs/index.js",
+    "workerd/index.js",
+    "workerd/opaque_bg.wasm"
   ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "workerd": "./workerd/index.js",
+      "browser": "./esm/index.js",
+      "module": "./esm/index.js",
+      "default": "./cjs/index.js"
+    },
+    "./*": "./*"
+  },
   "module": "esm/index.js",
   "types": "index.d.ts",
   "main": "cjs/index.js",
@@ -127,12 +139,16 @@ function main() {
   sh.cp("bin/templates/*", "build/wbg_p256");
 
   // run tsc on our entry module wrapper
-  tsc("build/wbg_ristretto/index.ts");
-  tsc("build/wbg_p256/index.ts");
+  tsc("build/wbg_ristretto/index.ts build/wbg_ristretto/index_workerd.ts");
+  tsc("build/wbg_p256/index.ts build/wbg_p256/index_workerd.ts");
 
   // run rollup to bundle the js with wasm inlined and also bundle d.ts files
   rollup("ristretto");
   rollup("p256");
+
+  // the workerd build imports the wasm file
+  sh.cp("build/wbg_ristretto/opaque_bg.wasm", "build/ristretto/workerd/");
+  sh.cp("build/wbg_p256/opaque_bg.wasm", "build/p256/workerd/");
 
   // write package json
   packageJson("opaque").to("build/ristretto/package.json");

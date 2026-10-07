@@ -10,8 +10,20 @@
   "files": [
     "index.d.ts",
     "esm/index.js",
-    "cjs/index.js"
+    "cjs/index.js",
+    "workerd/index.js",
+    "workerd/opaque_bg.wasm"
   ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "workerd": "./workerd/index.js",
+      "browser": "./esm/index.js",
+      "module": "./esm/index.js",
+      "default": "./cjs/index.js"
+    },
+    "./*": "./*"
+  },
   "module": "esm/index.js",
   "types": "index.d.ts",
   "main": "cjs/index.js",

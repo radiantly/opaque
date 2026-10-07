@@ -26,6 +26,14 @@ module.exports = [
     plugins: [wasm({ maxFileSize: 10000000, targetEnv: "auto-inline" })],
   },
   {
+    input: `build/wbg_${entryName}/index_workerd.js`,
+    external: (id) => id.endsWith(".wasm?module"),
+    output: {
+      format: "esm",
+      file: `build/${entryName}/workerd/index.js`,
+    },
+  },
+  {
     input: `build/wbg_${entryName}/index.d.ts`,
     output: [{ file: `build/${entryName}/index.d.ts`, format: "es" }],
     plugins: [dts()],
